@@ -1,14 +1,13 @@
 import os
 
-import pinecone
+from pinecone import Pinecone as PineconeClient
 import streamlit as st
 from dotenv import load_dotenv, find_dotenv
-from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import DirectoryLoader, WebBaseLoader
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.vectorstores import Pinecone
+from langchain.chains.retrieval_qa.base import RetrievalQA
+from langchain_community.document_loaders import DirectoryLoader, WebBaseLoader
+from langchain_community.vectorstores import Pinecone
+from langchain_text_splitters import CharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 
 load_dotenv(find_dotenv())
 
@@ -45,10 +44,7 @@ def doc_preprocessing_web():
 @st.cache_resource
 def embedding_db():
     embeddings = OpenAIEmbeddings()
-    pinecone.init(
-        api_key=PINECONE_API_KEY,
-        environment=PINECONE_ENV
-    )
+    PineconeClient(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
     docs_split = doc_preprocessing_pdf()
     return Pinecone.from_documents(
         docs_split, 
@@ -73,8 +69,8 @@ def retrieval_answer(query):
 
 
 def main():
-    st.title("Question and Answering App powered by LLM and Pinecone")
-    text_input = st.text_input("Ask your query...")
+    st.title("LLM с дополнительными данными!")
+    text_input = st.text_input("Задай свой вопрос...")
     if st.button("Ask Query"):
         if len(text_input) > 0:
             st.info("Your Query: " + text_input)
