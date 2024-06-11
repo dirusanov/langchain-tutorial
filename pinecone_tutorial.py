@@ -20,6 +20,7 @@ def doc_preprocessing_pdf():
     loader = DirectoryLoader(
         './data',
         glob='**/*pdf',
+        show_progress=True,
     )
     docs = loader.load()
     text_splitter = CharacterTextSplitter(
@@ -31,7 +32,7 @@ def doc_preprocessing_pdf():
 
 
 def doc_preprocessing_web():
-    loader = WebBaseLoader("https://d-rusanov.ru/about")
+    loader = WebBaseLoader("https://en.wikipedia.org/wiki/Python_(programming_language)")
     docs = loader.load()
     text_splitter = CharacterTextSplitter(
         chunk_size=1000,
@@ -45,6 +46,7 @@ def doc_preprocessing_web():
 def embedding_db():
     embeddings = OpenAIEmbeddings()
     PineconeClient(api_key=PINECONE_API_KEY, environment=PINECONE_ENV)
+    # also can use doc_preprocessing_web() for web data
     docs_split = doc_preprocessing_pdf()
     return Pinecone.from_documents(
         docs_split, 
